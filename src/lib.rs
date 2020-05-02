@@ -22,9 +22,21 @@ where
     K: Distance,
 {
     /// Create a new BK Tree with an empty root.
-    // TODO: Allow the option to insert an entire vector of items
     pub fn new() -> BKTree<K, V> {
         BKTree { root: None }
+    }
+
+    /// Create a new tree from the items in a Vector.
+    /// Useful for inserting a lot of items from a file etc.
+    /// Vector requires a Vec of tuples of K, V pairs where K implements Distance trait
+    pub fn new_from_vec(items: Vec<(K, V)>) -> BKTree<K, V> {
+        let mut tree = BKTree { root: None };
+
+        for item in items {
+            tree.insert(item.0, item.1);
+        }
+
+        return tree;
     }
 
     /// Add a new (key, value) pair into the BKTree.
@@ -209,7 +221,7 @@ mod bktree_tests {
             ("hello world", "hello world ", 1),
             ("hello world", "h ello World", 2),
             ("helo wolrd", "hello world", 2),
-            ("open", "opnre", 3), // In case of demere Lavenstien distance this might have been 2
+            ("open", "opnre", 3), // In case of damerau levenshtein this might be 2
             ("CA", "ABC", 3),
         ];
 
