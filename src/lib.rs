@@ -22,15 +22,18 @@ where
     K: Distance,
 {
     /// Create a new BK Tree with an empty root.
+    // TODO: Allow the option to insert an entire vector of items
     pub fn new() -> BKTree<K, V> {
         BKTree { root: None }
     }
 
     /// Add a new (key, value) pair into the BKTree.
     pub fn insert(&mut self, key: K, value: V) {
+        // If the root exists, insert from there.
         if let Some(root) = &mut self.root {
             root.insert(key, value);
         } else {
+            // otherwise, set the root to be a new BKTreeNode
             self.root = Some(BKTreeNode::new(key, value));
         }
     }
@@ -41,9 +44,11 @@ where
     ///
     /// A match is approximate if the distance between key1 and key2 are less than the given tolerence.
     pub fn find(&self, key: &K, tolerence: usize) -> (Vec<&V>, Vec<&K>) {
+        // if our root exists, search from the root
         return if let Some(root) = &self.root {
             root.find(&key, tolerence)
         } else {
+            // if we can not find anything, return a tuple of empty vectors
             (vec![], vec![])
         };
     }
@@ -63,6 +68,7 @@ impl<K, V> BKTreeNode<K, V>
 where
     K: Distance,
 {
+    /// Create a new BK Tree Node with the given (K, V) pair and empty HashMap of children
     fn new(key: K, value: V) -> Self {
         BKTreeNode {
             key,
@@ -71,34 +77,45 @@ where
         }
     }
 
+    /// Insert a new (key, value) pair into this nodes children
     fn insert(&mut self, key: K, value: V) {
+        // Get the distance between the current nodes key and the given key
         let distance = self.key.distance(&key);
+        // If the child exists, traverse and insert from there.
         if let Some(child) = self.children.get_mut(&distance) {
             child.insert(key, value);
         } else {
+            // otherwise, insert the current node into the children and with the given distance
             self.children.insert(distance, BKTreeNode::new(key, value));
         }
     }
 
+    /// Find a key in the given childrens nodes
     fn find(&self, key: &K, leniency: usize) -> (Vec<&V>, Vec<&K>) {
+        // Create a new tuple of empty vectors for exact and close matches
         let (mut exact, mut close) = (vec![], vec![]);
+        // Get the distance between the current nodes key and then passed in key.
         let current_distance = self.key.distance(&key);
+        // If the current distance is 0, it means its an exact match so push it to our "exact" matches
         if current_distance == 0 {
             exact.push(&self.value);
+        // Otherwise, if the value is less than our leniency then add it to the close matches
         } else if current_distance <= leniency {
             close.push(&self.key);
         }
 
+        // Saturing just means that the values will not overflow
         for i in
             current_distance.saturating_sub(leniency)..=current_distance.saturating_add(leniency)
         {
+            // Because of how the tree works, we can traverse based off the leniency
             if let Some(child) = self.children.get(&i) {
                 let mut result = child.find(key, leniency);
                 exact.append(&mut result.0);
                 close.append(&mut result.1);
             }
         }
-
+        // return our vector of close and exact values
         return (exact, close);
     }
 }
@@ -111,7 +128,15 @@ pub trait Distance {
     fn distance(&self, other: &Self) -> usize;
 }
 
+// We want to implement distance for String, and OSA is a good way to do so.
+// This allows us to create a BKTree using Strings
 impl Distance for String {
+    fn distance(&self, other: &Self) -> usize {
+        osa_distance(self, other)
+    }
+}
+
+impl Distance for &str {
     fn distance(&self, other: &Self) -> usize {
         osa_distance(self, other)
     }
