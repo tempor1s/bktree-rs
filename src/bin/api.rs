@@ -16,7 +16,7 @@ struct ExactCloseResponse {
     close: Vec<String>,
 }
 
-impl<'a> ExactCloseResponse {
+impl ExactCloseResponse {
     fn new(exact: Vec<String>, close: Vec<String>) -> Self {
         ExactCloseResponse { exact, close }
     }
