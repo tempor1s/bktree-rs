@@ -17,7 +17,7 @@ struct Response {
     distance: usize,
     limit: usize,
     count: usize,
-    //TODO: ? order: String, order: "lexigraphical"
+    //TODO: order: String, order: "lexigraphical"
     results: Vec<HashMap<usize, Vec<String>>>,
 }
 
@@ -41,7 +41,7 @@ impl Response {
 
 #[get("/")]
 fn index() -> &'static str {
-    "Welcome to the 'did you mean' api."
+    "Hi there!\nMake a get request to /words?query=<word>&distance=<edit_distance> to get started."
 }
 
 #[get("/words?<query>&<distance>&<limit>")]
