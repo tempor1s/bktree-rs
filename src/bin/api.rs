@@ -51,35 +51,55 @@ fn get_word(
     limit: Option<usize>,
     bktree: State<SpellTree<String>>,
 ) -> Json<Response> {
-    // find the item in the tree
     let mut count = 0;
     let mut words: Vec<HashMap<usize, Vec<String>>> = vec![];
 
+    let limit = match limit {
+        Some(num) => num,
+        None => 0,
+    };
+
     for i in 0..distance + 1 {
         if i == 0 {
-            let (exact, _) = bktree.find(&query, 1);
-            let exact: Vec<String> = exact.iter().map(|val| val.to_string()).collect();
+            let (exact, _) = bktree.find(&query, 0);
+
             let mut hm: HashMap<usize, Vec<String>> = HashMap::new();
+            let mut exact_words: Vec<String> = vec![];
 
-            count += exact.len() as usize;
-            hm.insert(0, exact);
+            for word in exact {
+                if count < limit {
+                    let word = word.to_string();
+                    exact_words.push(word);
 
+                    count += 1;
+                }
+            }
+
+            hm.insert(0, exact_words);
             words.push(hm);
         } else {
             let (_, close) = bktree.find(&query, i);
-            let close: Vec<String> = close.iter().map(|val| val.to_string()).collect();
+
             let mut hm: HashMap<usize, Vec<String>> = HashMap::new();
+            let mut close_words: Vec<String> = vec![];
 
-            count += close.len() as usize;
-            hm.insert(i, close);
+            for word in close {
+                if count < limit {
+                    let word = word.to_string();
+                    close_words.push(word);
 
+                    count += 1;
+                }
+            }
+
+            hm.insert(i, close_words);
             words.push(hm);
         }
     }
 
     // return the json response
     // Json(ExactCloseResponse::new(exact, close))
-    Json(Response::new(query, distance, 100000, count, words))
+    Json(Response::new(query, distance, limit, count, words))
 }
 
 fn generate_tree(filename: &str) -> SpellTree<String> {
