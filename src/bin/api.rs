@@ -44,15 +44,20 @@ fn index() -> &'static str {
     "Welcome to the 'did you mean' api."
 }
 
-#[get("/<word>/<tolerence>")]
-fn get_word(word: String, tolerence: usize, bktree: State<SpellTree<String>>) -> Json<Response> {
+#[get("/words?<query>&<distance>&<limit>")]
+fn get_word(
+    query: String,
+    distance: usize,
+    limit: Option<usize>,
+    bktree: State<SpellTree<String>>,
+) -> Json<Response> {
     // find the item in the tree
     let mut count = 0;
     let mut words: Vec<HashMap<usize, Vec<String>>> = vec![];
 
-    for i in 0..tolerence + 1 {
+    for i in 0..distance + 1 {
         if i == 0 {
-            let (exact, _) = bktree.find(&word, 1);
+            let (exact, _) = bktree.find(&query, 1);
             let exact: Vec<String> = exact.iter().map(|val| val.to_string()).collect();
             let mut hm: HashMap<usize, Vec<String>> = HashMap::new();
 
@@ -61,7 +66,7 @@ fn get_word(word: String, tolerence: usize, bktree: State<SpellTree<String>>) ->
 
             words.push(hm);
         } else {
-            let (_, close) = bktree.find(&word, i);
+            let (_, close) = bktree.find(&query, i);
             let close: Vec<String> = close.iter().map(|val| val.to_string()).collect();
             let mut hm: HashMap<usize, Vec<String>> = HashMap::new();
 
@@ -74,7 +79,7 @@ fn get_word(word: String, tolerence: usize, bktree: State<SpellTree<String>>) ->
 
     // return the json response
     // Json(ExactCloseResponse::new(exact, close))
-    Json(Response::new(word, tolerence, 100000, count, words))
+    Json(Response::new(query, distance, 100000, count, words))
 }
 
 fn generate_tree(filename: &str) -> SpellTree<String> {
