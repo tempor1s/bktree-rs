@@ -61,6 +61,10 @@ fn get_word(
 
     for i in 0..distance + 1 {
         if i == 0 {
+            if count == limit {
+                break;
+            }
+
             let (exact, _) = bktree.find(&query, 0);
 
             let mut hm: HashMap<usize, Vec<String>> = HashMap::new();
@@ -78,6 +82,10 @@ fn get_word(
             hm.insert(0, exact_words);
             words.push(hm);
         } else {
+            if count == limit {
+                break;
+            }
+
             let (_, close) = bktree.find(&query, i);
 
             let mut hm: HashMap<usize, Vec<String>> = HashMap::new();
