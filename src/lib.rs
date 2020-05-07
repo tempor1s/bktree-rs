@@ -255,6 +255,7 @@ mod bktree_tests {
         assert_eq!(res.1.len(), 1);
         assert_eq!(res.1[0], "helicopter");
         res = tree.find(&"attempt".to_string(), 1);
+        println!("{:#?}", tree.root);
         assert_eq!(res.0.len(), 0);
         assert_eq!(res.1.len(), 0);
     }

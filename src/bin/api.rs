@@ -7,18 +7,35 @@ use bktree_rs::*;
 use rocket::State;
 use rocket_contrib::json::Json;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Error};
 
 #[derive(Debug, Deserialize, Serialize)]
-struct ExactCloseResponse {
-    exact: Vec<String>,
-    close: Vec<String>,
+struct Response {
+    query: String,
+    distance: usize,
+    limit: usize,
+    count: usize,
+    //TODO: ? order: String, order: "lexigraphical"
+    results: Vec<HashMap<usize, Vec<String>>>,
 }
 
-impl ExactCloseResponse {
-    fn new(exact: Vec<String>, close: Vec<String>) -> Self {
-        ExactCloseResponse { exact, close }
+impl Response {
+    fn new(
+        query: String,
+        distance: usize,
+        limit: usize,
+        count: usize,
+        results: Vec<HashMap<usize, Vec<String>>>,
+    ) -> Self {
+        Response {
+            query,
+            distance,
+            limit,
+            count,
+            results,
+        }
     }
 }
 
@@ -28,20 +45,36 @@ fn index() -> &'static str {
 }
 
 #[get("/<word>/<tolerence>")]
-fn get_word(
-    word: String,
-    tolerence: usize,
-    bktree: State<SpellTree<String>>,
-) -> Json<ExactCloseResponse> {
+fn get_word(word: String, tolerence: usize, bktree: State<SpellTree<String>>) -> Json<Response> {
     // find the item in the tree
-    let (exact, close) = bktree.find(&word, tolerence);
+    let mut count = 0;
+    let mut words: Vec<HashMap<usize, Vec<String>>> = vec![];
 
-    // convert &Strings to a normal String
-    let exact: Vec<String> = exact.iter().map(|val| val.to_string()).collect();
-    let close: Vec<String> = close.iter().map(|val| val.to_string()).collect();
+    for i in 0..tolerence + 1 {
+        if i == 0 {
+            let (exact, _) = bktree.find(&word, 1);
+            let exact: Vec<String> = exact.iter().map(|val| val.to_string()).collect();
+            let mut hm: HashMap<usize, Vec<String>> = HashMap::new();
+
+            count += exact.len() as usize;
+            hm.insert(0, exact);
+
+            words.push(hm);
+        } else {
+            let (_, close) = bktree.find(&word, i);
+            let close: Vec<String> = close.iter().map(|val| val.to_string()).collect();
+            let mut hm: HashMap<usize, Vec<String>> = HashMap::new();
+
+            count += close.len() as usize;
+            hm.insert(i, close);
+
+            words.push(hm);
+        }
+    }
 
     // return the json response
-    Json(ExactCloseResponse::new(exact, close))
+    // Json(ExactCloseResponse::new(exact, close))
+    Json(Response::new(word, tolerence, 100000, count, words))
 }
 
 fn generate_tree(filename: &str) -> SpellTree<String> {
