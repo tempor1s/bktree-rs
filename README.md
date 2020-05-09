@@ -1,6 +1,35 @@
 # Rust BKTree
 
-A simple BKTree written in rust.
+A simple BKTree written in rust. It can be used as a library in your own code or as an API.
+
+## 🚀 Getting Started
+
+## API
+
+If you would like to use the api, you can get started by making a get request to the following link.
+
+https://bktree-api.dev.benlafferty.me/words?query=test&distance=2&limit=0
+
+This will make a request to the API, and give words within a "edit" distance of 2 with no limit. It auto-completes from the standard unix dictonary.
+
+What the paramaters do is as followed.
+
+```bash
+Query: The word that you want auto-complete or suggestions for.
+Distance: The amount of potential 'edits' to a word that the API will return.
+Limit: If you only want x amount of words returned form the API instead of all of them.
+```
+
+### Library
+
+Currently, the library is not published on on crates.io, but you can import it as a Github repository if you would like to use it.
+
+Add the following to your Cargo.toml file.
+
+```toml
+[dependencies]
+bktree-rs = { git = https://github.com/tempor1s/bktree-rs }
+```
 
 ## Contributors
 
