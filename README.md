@@ -4,7 +4,7 @@ A simple BKTree written in rust. It can be used as a library in your own code or
 
 ## 🚀 Getting Started
 
-## API
+### API
 
 If you would like to use the api, you can get started by making a get request to the following link.
 
