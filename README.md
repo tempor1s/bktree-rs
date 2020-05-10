@@ -2,6 +2,9 @@
 
 A simple BKTree written in rust. It can be used as a library in your own code or as an API.
 
+It is designed to allow for easy auto-complete or suggestions based off of a given word and corpus that it was built upon. It can be used for incredbily efficient lookup to enhance programs.
+Some use cases of this could be "did you mean" for words or for commands. It could also be used for a basic spell-check.
+
 ## 🚀 Getting Started
 
 ### API
