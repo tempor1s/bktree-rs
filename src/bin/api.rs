@@ -41,7 +41,7 @@ impl Response {
 
 #[get("/")]
 fn index() -> &'static str {
-    "Hi there!\nMake a get request to /words?query=<word>&distance=<edit_distance> to get started."
+    "Hi there!\nMake a get request to /words?query=<word (string)>&distance=<int>&limit=<int (0 for all matches)> to get started."
 }
 
 #[get("/words?<query>&<distance>&<limit>")]
@@ -61,7 +61,7 @@ fn get_word(
 
     for i in 0..distance + 1 {
         if i == 0 {
-            if count == limit {
+            if count == limit && limit != 0 {
                 break;
             }
 
@@ -71,7 +71,7 @@ fn get_word(
             let mut exact_words: Vec<String> = vec![];
 
             for word in exact {
-                if count < limit {
+                if count < limit || limit == 0 {
                     let word = word.to_string();
                     exact_words.push(word);
 
@@ -82,7 +82,7 @@ fn get_word(
             hm.insert(0, exact_words);
             words.push(hm);
         } else {
-            if count == limit {
+            if count == limit && limit != 0 {
                 break;
             }
 
@@ -92,7 +92,7 @@ fn get_word(
             let mut close_words: Vec<String> = vec![];
 
             for word in close {
-                if count < limit {
+                if count < limit || limit == 0 {
                     let word = word.to_string();
                     close_words.push(word);
 
