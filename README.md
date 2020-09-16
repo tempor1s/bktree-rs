@@ -11,7 +11,7 @@ Some use cases of this could be "did you mean" for words or for commands. It cou
 
 If you would like to use the api, you can get started by making a get request to the following link.
 
-https://bktree-api.dev.benlafferty.me/words?query=test&distance=2&limit=0
+https://bktree-api.dev.benl.dev/words?query=test&distance=2&limit=0
 
 This will make a request to the API, and give words within a "edit" distance of 2 with no limit. It auto-completes from the standard unix dictonary.
 
@@ -40,4 +40,4 @@ Anyone is welcome to contribute!
 
 <table>
   <tr>
-    <td align="center"><a href="https://github.com/tempor1s"><img src="https://avatars0.githubusercontent.com/u/29741401?s=460&u=1ca03db5bbb7046bab14f72b7d6e801b9b0ac6f0&v=4" width="75px;" alt="Ben Lafferty"/><br /><sub><b>Ben Lafferty</b></sub></a><br /><a href="https://github.com/tempor1s/msconsole/commits?author=tempor1s" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/tempor1s"><img src="https://avatars0.githubusercontent.com/u/29741401?s=460&u=1ca03db5bbb7046bab14f72b7d6e801b9b0ac6f0&v=4" width="75px;" alt="Ben"/><br /><sub><b>Ben Lafferty</b></sub></a><br /><a href="https://github.com/tempor1s/msconsole/commits?author=tempor1s" title="Code">💻</a></td>
